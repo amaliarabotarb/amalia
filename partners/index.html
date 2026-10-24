@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Свадебные партнёры</title>
+<style>*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}[hidden]{display:none!important}
+/* Layout: one narrow column — header with progress, the message to copy, filters, then the contact list */
+:root{
+  --bg:#fbfaf8; --surface:#ffffff; --line:#ece6e1; --fg:#231c1d; --muted:#7a6e6c;
+  --red:#a3192b; --red-soft:#f8e8ea; --gold:#a8843a; --gold-soft:#f5eedd;
+  --ok:#2f7a4c; --ok-soft:#e5f2ea; --blue:#2c5d93; --blue-soft:#e6eef8;
+  --display:Georgia,"Times New Roman",serif; --body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#171213; --surface:#211a1b; --line:#3a2f30; --fg:#f2eceb; --muted:#ab9f9d;
+  --red:#e2606f; --red-soft:#3b1f23; --gold:#d4b06a; --gold-soft:#352c1c;
+  --ok:#6cc18d; --ok-soft:#1d3226; --blue:#7fadde; --blue-soft:#1d2a3a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#171213; --surface:#211a1b; --line:#3a2f30; --fg:#f2eceb; --muted:#ab9f9d;
+  --red:#e2606f; --red-soft:#3b1f23; --gold:#d4b06a; --gold-soft:#352c1c;
+  --ok:#6cc18d; --ok-soft:#1d3226; --blue:#7fadde; --blue-soft:#1d2a3a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,7vw,44px);line-height:1.05;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--red)}
+.lead{color:var(--muted);margin:6px 0 0;max-width:60ch}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-family:var(--display);font-size:28px;font-weight:400;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat span{font-size:12px;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--red);width:0;transition:width .3s}
+details.msg{background:var(--gold-soft);border-radius:12px;padding:14px 16px}
+details.msg summary{cursor:pointer;font-weight:600;display:flex;justify-content:space-between;gap:12px;align-items:center;list-style:none}
+details.msg summary::-webkit-details-marker{display:none}
+details.msg summary::after{content:"Показать";font-weight:500;font-size:13px;color:var(--gold)}
+details.msg[open] summary::after{content:"Скрыть"}
+.msg pre{white-space:pre-wrap;font-family:var(--body);font-size:14px;margin:12px 0;background:var(--surface);padding:12px;border-radius:8px;border:1px solid var(--line)}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--red);color:#fff;border:0;border-radius:999px;padding:9px 18px;font-weight:600}
+:root .btn{color:var(--surface)}
+.btn:focus-visible,.chip:focus-visible,.st:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.filters{display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:6px 12px;font-size:13px;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.row2{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px}
+select,input{font:inherit;font-size:14px;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%}
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 14px;border-top:1px solid var(--line);align-items:center}
+.item:first-child{border-top:0}
+.item .h{font-weight:700;color:var(--fg);text-decoration:none;word-break:break-all}
+.item .h:hover{color:var(--red)}
+.meta{grid-column:1;display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12.5px;color:var(--muted)}
+.tag{font-size:11px;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:1px 6px}
+.tag.p1{background:var(--red-soft);color:var(--red)}
+.tag.src{background:var(--gold-soft);color:var(--gold)}
+.acts{grid-row:1/span 2;grid-column:2;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.dm{display:block;text-align:center;background:var(--red);color:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+.dm:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;max-width:calc(100% - 32px);text-align:center;z-index:20}
+.st{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;background:var(--surface);color:var(--muted);white-space:nowrap;min-width:118px}
+.st[data-s="1"]{background:var(--blue-soft);color:var(--blue);border-color:transparent}
+.st[data-s="2"]{background:var(--gold-soft);color:var(--gold);border-color:transparent}
+.st[data-s="3"]{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.st[data-s="4"]{background:var(--line);color:var(--muted);border-color:transparent;text-decoration:line-through}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+.notes{font-size:13.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.notes b{color:var(--fg)}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}.row2{grid-template-columns:1fr 1fr}.row2 input{grid-column:1/-1}.st{min-width:0}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+
+.msg pre{user-select:text;-webkit-user-select:text}
+.hint{font-size:13px;color:var(--muted);margin:0}
+
+.save{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.save .ok{color:var(--ok);font-weight:600;margin:0}
+.save .bad{color:var(--red);font-weight:600;margin:0}
+.save .btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn2{background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px}
+.btn2:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.save textarea{font:inherit;font-size:13px;width:100%;min-height:70px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;resize:vertical}
+.when{color:var(--blue);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Свадебные <em>партнёры</em> по&nbsp;Беларуси</h1>
+    <p class="lead">103 аккаунтов в Instagram. Нажми «Написать»: откроется чат в приложении Instagram. Текст сообщения скопируй ниже и вставь в чат.</p>
+  </header>
+  <section class="save" aria-label="Сохранение отметок">
+    <p id="saveState" class="ok">✓ Отметки сохраняются сразу</p>
+    <p class="hint">Чтобы перенести отметки с телефона на ноутбук (или обратно): нажми «Скопировать код отметок», отправь код себе в Telegram «Избранное», на другом устройстве нажми «Вставить код» и вставь. Отметки объединятся, ничего не сотрётся.</p>
+    <div class="btns">
+      <button type="button" class="btn2" id="expBtn">Скопировать код отметок</button>
+      <button type="button" class="btn2" id="impBtn">Вставить код</button>
+    </div>
+    <div id="impBox" hidden>
+      <textarea id="impText" placeholder="Вставь сюда код, начинается с WP1:"></textarea>
+      <div class="btns"><button type="button" class="btn" id="impApply">Добавить отметки</button></div>
+    </div>
+    <textarea id="expText" readonly hidden></textarea>
+  </section>
+  <section aria-label="Прогресс">
+    <div class="stats">
+      <div class="stat"><b id="sAll">103</b><span>в списке</span></div>
+      <div class="stat"><b id="sSent">0</b><span>написала</span></div>
+      <div class="stat"><b id="sReply">0</b><span>ответили</span></div>
+      <div class="stat"><b id="sDeal">0</b><span>договорились</span></div>
+    </div>
+    <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+  </section>
+  <section class="msg" style="background:var(--gold-soft);border-radius:12px;padding:14px 16px">
+    <b>Текст первого сообщения</b>
+    <pre id="msgText">Здравствуйте! Меня зовут Амалия, я графический дизайнер и веб-разработчик: сайты, Telegram-боты, дизайн приложений и фирменный стиль. Работаю официально как самозанятая.
+
+Пишу, потому что вы работаете со свадьбами 💍 Я делаю для пар сайты-приглашения: одна ссылка для гостей — история пары, таймер, карта, программа дня и анкета гостя.
+
+Предлагаю партнёрство: вы рекомендуете меня парам — я плачу вам 10% с каждого заказа, а вашим парам даю скидку 5%. От вас — только рекомендация.
+
+Можно расскажу подробнее?</pre>
+    <button class="btn" id="copyBtn" type="button">Скопировать текст</button>
+    <p class="hint">Если кнопка не копирует: нажми на текст, удерживай палец → «Выбрать всё» → «Скопировать».</p>
+  </section>
+  <section class="filters" aria-label="Фильтры">
+    <div class="chips" id="chips" role="group" aria-label="Категория"></div>
+    <div class="row2">
+      <select id="city" aria-label="Город"></select>
+      <select id="status" aria-label="Статус">
+        <option value="all">Любой статус</option><option value="0">Не писала</option><option value="1">Написала</option><option value="2">Ответили</option><option value="3">Договорились</option><option value="4">Отказ / не найден</option>
+      </select>
+      <input id="q" type="search" placeholder="Поиск по нику" aria-label="Поиск по нику">
+    </div>
+  </section>
+  <div class="list" id="list">
+<div class="item" data-h="oliakulichik" data-g="Организаторы и агентства" data-city="Брест">
+<a class="h" href="https://www.instagram.com/oliakulichik/">@oliakulichik</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/oliakulichik">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Брест</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="buro_vysota" data-g="Организаторы и агентства" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/buro_vysota/">@buro_vysota</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/buro_vysota">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Гомель</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="olya.bulovetskaya" data-g="Организаторы и агентства" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/olya.bulovetskaya/">@olya.bulovetskaya</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/olya.bulovetskaya">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Гомель</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="boyarovagency" data-g="Организаторы и агентства" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/boyarovagency/">@boyarovagency</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/boyarovagency">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Гродно</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="gavrilovich_wedding" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/gavrilovich_wedding/">@gavrilovich_wedding</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/gavrilovich_wedding">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="luxweddingstar" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/luxweddingstar/">@luxweddingstar</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/luxweddingstar">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">сайт megastar.by</span></div>
+</div>
+<div class="item" data-h="anastasiya_dyubaylo" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/anastasiya_dyubaylo/">@anastasiya_dyubaylo</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/anastasiya_dyubaylo">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="elenastarovojtova" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/elenastarovojtova/">@elenastarovojtova</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/elenastarovojtova">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="romariko.wedding" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/romariko.wedding/">@romariko.wedding</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/romariko.wedding">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">сайт romariko.by</span></div>
+</div>
+<div class="item" data-h="dobrova_wedding" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/dobrova_wedding/">@dobrova_wedding</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/dobrova_wedding">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">сайт dobrova.by</span></div>
+</div>
+<div class="item" data-h="gen.soul__" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/gen.soul__/">@gen.soul__</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/gen.soul__">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">сайт gensoul.by</span></div>
+</div>
+<div class="item" data-h="narcis_stylist" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/narcis_stylist/">@narcis_stylist</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/narcis_stylist">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Агентство/стилист</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">сайт narcissus.by</span></div>
+</div>
+<div class="item" data-h="tamada_agency" data-g="Организаторы и агентства" data-city="Минск">
+<a class="h" href="https://www.instagram.com/tamada_agency/">@tamada_agency</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/tamada_agency">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Агентство (ведущие, организация)</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">сайт tamada.by</span></div>
+</div>
+<div class="item" data-h="vpudre" data-g="Организаторы и агентства" data-city="не указан — проверить">
+<a class="h" href="https://www.instagram.com/vpudre/">@vpudre</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/vpudre">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Организатор</span><span>не указан — проверить</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="fazenda.brest" data-g="Площадки и усадьбы" data-city="Брест">
+<a class="h" href="https://www.instagram.com/fazenda.brest/">@fazenda.brest</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/fazenda.brest">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Брест</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="verasy.by" data-g="Площадки и усадьбы" data-city="Витебск">
+<a class="h" href="https://www.instagram.com/verasy.by/">@verasy.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/verasy.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/база отдыха</span><span>Витебск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="s.rodnik.vitebsk" data-g="Площадки и усадьбы" data-city="Витебск">
+<a class="h" href="https://www.instagram.com/s.rodnik.vitebsk/">@s.rodnik.vitebsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/s.rodnik.vitebsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/дом отдыха</span><span>Витебск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="ozernaya.by" data-g="Площадки и усадьбы" data-city="Витебск">
+<a class="h" href="https://www.instagram.com/ozernaya.by/">@ozernaya.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/ozernaya.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/база отдыха</span><span>Витебск</span><span class="tag p1">писать первыми</span><span class="tag src">сайт ozernaya.by</span></div>
+</div>
+<div class="item" data-h="data_wedding_place" data-g="Площадки и усадьбы" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/data_wedding_place/">@data_wedding_place</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/data_wedding_place">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Гомель</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="horoshee_mesto_gomel" data-g="Площадки и усадьбы" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/horoshee_mesto_gomel/">@horoshee_mesto_gomel</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/horoshee_mesto_gomel">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Гомель</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="ivapark.by" data-g="Площадки и усадьбы" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/ivapark.by/">@ivapark.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/ivapark.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Гродно</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="belladzhio_vip_minsk" data-g="Площадки и усадьбы" data-city="Минск">
+<a class="h" href="https://www.instagram.com/belladzhio_vip_minsk/">@belladzhio_vip_minsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/belladzhio_vip_minsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="gatsby_hall_minsk_" data-g="Площадки и усадьбы" data-city="Минск">
+<a class="h" href="https://www.instagram.com/gatsby_hall_minsk_/">@gatsby_hall_minsk_</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/gatsby_hall_minsk_">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="villa.la.villa" data-g="Площадки и усадьбы" data-city="Минск">
+<a class="h" href="https://www.instagram.com/villa.la.villa/">@villa.la.villa</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/villa.la.villa">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="usadbalegenda" data-g="Площадки и усадьбы" data-city="Минск">
+<a class="h" href="https://www.instagram.com/usadbalegenda/">@usadbalegenda</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/usadbalegenda">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="m_hall_minsk" data-g="Площадки и усадьбы" data-city="Минск">
+<a class="h" href="https://www.instagram.com/m_hall_minsk/">@m_hall_minsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/m_hall_minsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/банкетный зал</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="parkhallminsk" data-g="Площадки и усадьбы" data-city="Минск">
+<a class="h" href="https://www.instagram.com/parkhallminsk/">@parkhallminsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/parkhallminsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/банкетный зал</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="forest__glade" data-g="Площадки и усадьбы" data-city="Минская обл.">
+<a class="h" href="https://www.instagram.com/forest__glade/">@forest__glade</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/forest__glade">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Минская обл.</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="westa.by" data-g="Площадки и усадьбы" data-city="Минская обл.">
+<a class="h" href="https://www.instagram.com/westa.by/">@westa.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/westa.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/усадьба</span><span>Минская обл.</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="siabry_komplex" data-g="Площадки и усадьбы" data-city="Минская обл.">
+<a class="h" href="https://www.instagram.com/siabry_komplex/">@siabry_komplex</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/siabry_komplex">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/загородный комплекс</span><span>Минская обл.</span><span class="tag p1">писать первыми</span><span class="tag src">сайт siabry.by</span></div>
+</div>
+<div class="item" data-h="robinsonclub_minsk" data-g="Площадки и усадьбы" data-city="Минская обл.">
+<a class="h" href="https://www.instagram.com/robinsonclub_minsk/">@robinsonclub_minsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/robinsonclub_minsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Площадка/загородный комплекс</span><span>Минская обл.</span><span class="tag p1">писать первыми</span><span class="tag src">сайт robins.by</span></div>
+</div>
+<div class="item" data-h="nadindecor_" data-g="Декор" data-city="Минск">
+<a class="h" href="https://www.instagram.com/nadindecor_/">@nadindecor_</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/nadindecor_">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Декор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="weddecorminsk" data-g="Декор" data-city="Минск">
+<a class="h" href="https://www.instagram.com/weddecorminsk/">@weddecorminsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/weddecorminsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Декор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="almaslennikov" data-g="Декор" data-city="Минск">
+<a class="h" href="https://www.instagram.com/almaslennikov/">@almaslennikov</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/almaslennikov">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Декор</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="lia.by" data-g="Декор" data-city="Минск">
+<a class="h" href="https://www.instagram.com/lia.by/">@lia.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/lia.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Декор/фотозоны</span><span>Минск</span><span class="tag p1">писать первыми</span><span class="tag src">сайт lia.by</span></div>
+</div>
+<div class="item" data-h="mogilev_ovation" data-g="Декор" data-city="Могилёв">
+<a class="h" href="https://www.instagram.com/mogilev_ovation/">@mogilev_ovation</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/mogilev_ovation">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Декор</span><span>Могилёв</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="elle_decore_studio" data-g="Декор" data-city="Новополоцк, Полоцк, Браслав">
+<a class="h" href="https://www.instagram.com/elle_decore_studio/">@elle_decore_studio</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/elle_decore_studio">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Декор</span><span>Новополоцк, Полоцк, Браслав</span><span class="tag p1">писать первыми</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="pan4enkoby" data-g="Ведущие" data-city="Витебск">
+<a class="h" href="https://www.instagram.com/pan4enkoby/">@pan4enkoby</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/pan4enkoby">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Ведущий</span><span>Витебск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="panfilooleg" data-g="Ведущие" data-city="Минск">
+<a class="h" href="https://www.instagram.com/panfilooleg/">@panfilooleg</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/panfilooleg">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Ведущий</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="tamadacomedy" data-g="Ведущие" data-city="Минск">
+<a class="h" href="https://www.instagram.com/tamadacomedy/">@tamadacomedy</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/tamadacomedy">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Ведущий</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="anna_chayka_photo" data-g="Фото и видео" data-city="Беларусь">
+<a class="h" href="https://www.instagram.com/anna_chayka_photo/">@anna_chayka_photo</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/anna_chayka_photo">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Беларусь</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="ester_svetlana_photo" data-g="Фото и видео" data-city="Брест">
+<a class="h" href="https://www.instagram.com/ester_svetlana_photo/">@ester_svetlana_photo</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/ester_svetlana_photo">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Брест</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="aleksandr_photography_brest" data-g="Фото и видео" data-city="Брест">
+<a class="h" href="https://www.instagram.com/aleksandr_photography_brest/">@aleksandr_photography_brest</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/aleksandr_photography_brest">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Брест</span><span class="tag src">сайт dyatkophoto.com</span></div>
+</div>
+<div class="item" data-h="katerinashipilo" data-g="Фото и видео" data-city="Витебск">
+<a class="h" href="https://www.instagram.com/katerinashipilo/">@katerinashipilo</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/katerinashipilo">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Витебск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="fadeev_maxim" data-g="Фото и видео" data-city="Витебск, Минск">
+<a class="h" href="https://www.instagram.com/fadeev_maxim/">@fadeev_maxim</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/fadeev_maxim">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Витебск, Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="pavlovphoto" data-g="Фото и видео" data-city="Витебск, Минск">
+<a class="h" href="https://www.instagram.com/pavlovphoto/">@pavlovphoto</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/pavlovphoto">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Витебск, Минск</span><span class="tag src">сайт photopavlov.com</span></div>
+</div>
+<div class="item" data-h="ph_sasha_echenko" data-g="Фото и видео" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/ph_sasha_echenko/">@ph_sasha_echenko</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/ph_sasha_echenko">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Гомель</span><span class="tag src">сайт echenko.by</span></div>
+</div>
+<div class="item" data-h="amelyanchik_foto" data-g="Фото и видео" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/amelyanchik_foto/">@amelyanchik_foto</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/amelyanchik_foto">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Гродно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="victoria_boyarchuk" data-g="Фото и видео" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/victoria_boyarchuk/">@victoria_boyarchuk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/victoria_boyarchuk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Гродно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="sandrapic_" data-g="Фото и видео" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/sandrapic_/">@sandrapic_</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/sandrapic_">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Гродно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="anchen_photo" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/anchen_photo/">@anchen_photo</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/anchen_photo">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="photomedved" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/photomedved/">@photomedved</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/photomedved">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="vladbabich_wed" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/vladbabich_wed/">@vladbabich_wed</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/vladbabich_wed">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="svetlana__photo__" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/svetlana__photo__/">@svetlana__photo__</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/svetlana__photo__">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="andrej_feschenko" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/andrej_feschenko/">@andrej_feschenko</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/andrej_feschenko">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Видеограф</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="_bashkinov_" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/_bashkinov_/">@_bashkinov_</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/_bashkinov_">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Видеограф</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="alexshostak" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/alexshostak/">@alexshostak</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/alexshostak">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Видеограф</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="medwed.photo" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/medwed.photo/">@medwed.photo</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/medwed.photo">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Минск</span><span class="tag src">сайт medvedev-wedding.com</span></div>
+</div>
+<div class="item" data-h="mary.photoby" data-g="Фото и видео" data-city="Минск">
+<a class="h" href="https://www.instagram.com/mary.photoby/">@mary.photoby</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/mary.photoby">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фото/видео (Голдосовы)</span><span>Минск</span><span class="tag src">сайт goldosovs.com</span></div>
+</div>
+<div class="item" data-h="photo_nevovan" data-g="Фото и видео" data-city="Молодечно">
+<a class="h" href="https://www.instagram.com/photo_nevovan/">@photo_nevovan</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/photo_nevovan">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Фотограф</span><span>Молодечно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="fiona.fiancee" data-g="Салоны платьев" data-city="Барановичи">
+<a class="h" href="https://www.instagram.com/fiona.fiancee/">@fiona.fiancee</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/fiona.fiancee">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Барановичи</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="radiance_wedding" data-g="Салоны платьев" data-city="Барановичи">
+<a class="h" href="https://www.instagram.com/radiance_wedding/">@radiance_wedding</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/radiance_wedding">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Барановичи</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="salon_sova_brest" data-g="Салоны платьев" data-city="Брест">
+<a class="h" href="https://www.instagram.com/salon_sova_brest/">@salon_sova_brest</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/salon_sova_brest">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Брест</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="papilio_brest" data-g="Салоны платьев" data-city="Брест">
+<a class="h" href="https://www.instagram.com/papilio_brest/">@papilio_brest</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/papilio_brest">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Брест</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="wedding_salonlegrand" data-g="Салоны платьев" data-city="Витебск">
+<a class="h" href="https://www.instagram.com/wedding_salonlegrand/">@wedding_salonlegrand</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/wedding_salonlegrand">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Витебск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="wedding_home_adilya" data-g="Салоны платьев" data-city="Витебск">
+<a class="h" href="https://www.instagram.com/wedding_home_adilya/">@wedding_home_adilya</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/wedding_home_adilya">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Витебск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="salon_konfetti_gomel" data-g="Салоны платьев" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/salon_konfetti_gomel/">@salon_konfetti_gomel</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/salon_konfetti_gomel">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Гомель</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="ideal_gomel" data-g="Салоны платьев" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/ideal_gomel/">@ideal_gomel</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/ideal_gomel">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Гомель</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="salonalice" data-g="Салоны платьев" data-city="Гомель, Мозырь">
+<a class="h" href="https://www.instagram.com/salonalice/">@salonalice</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/salonalice">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Гомель, Мозырь</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="svetlana_shved_wedding" data-g="Салоны платьев" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/svetlana_shved_wedding/">@svetlana_shved_wedding</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/svetlana_shved_wedding">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Гродно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="salon_monpari" data-g="Салоны платьев" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/salon_monpari/">@salon_monpari</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/salon_monpari">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Гродно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="pion.wedding.style" data-g="Салоны платьев" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/pion.wedding.style/">@pion.wedding.style</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/pion.wedding.style">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Гродно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="butterflysalon_by" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/butterflysalon_by/">@butterflysalon_by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/butterflysalon_by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="happiness_minsk_salon" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/happiness_minsk_salon/">@happiness_minsk_salon</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/happiness_minsk_salon">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="dominik_salon" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/dominik_salon/">@dominik_salon</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/dominik_salon">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="salon_rosso" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/salon_rosso/">@salon_rosso</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/salon_rosso">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="miss_dress_minsk" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/miss_dress_minsk/">@miss_dress_minsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/miss_dress_minsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Прокат платьев</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="lafesta.minsk" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/lafesta.minsk/">@lafesta.minsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/lafesta.minsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="salon_white_hall" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/salon_white_hall/">@salon_white_hall</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/salon_white_hall">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="salongalaminsk" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/salongalaminsk/">@salongalaminsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/salongalaminsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Минск</span><span class="tag src">сайт salongala.by</span></div>
+</div>
+<div class="item" data-h="fetesalon" data-g="Салоны платьев" data-city="Минск">
+<a class="h" href="https://www.instagram.com/fetesalon/">@fetesalon</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/fetesalon">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Минск</span><span class="tag src">сайт fetesalon.by</span></div>
+</div>
+<div class="item" data-h="shantalmogilev" data-g="Салоны платьев" data-city="Могилёв">
+<a class="h" href="https://www.instagram.com/shantalmogilev/">@shantalmogilev</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/shantalmogilev">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Салон платьев</span><span>Могилёв</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="fls_decor" data-g="Флористика" data-city="Брест">
+<a class="h" href="https://www.instagram.com/fls_decor/">@fls_decor</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/fls_decor">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Флористика/декор</span><span>Брест</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="d.fleur_gomel" data-g="Флористика" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/d.fleur_gomel/">@d.fleur_gomel</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/d.fleur_gomel">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Флористика</span><span>Гомель</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="floreal.by" data-g="Флористика" data-city="Гомель">
+<a class="h" href="https://www.instagram.com/floreal.by/">@floreal.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/floreal.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Флористика</span><span>Гомель</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="grodnoflowers" data-g="Флористика" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/grodnoflowers/">@grodnoflowers</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/grodnoflowers">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Флористика</span><span>Гродно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="myflowersby" data-g="Флористика" data-city="Минск">
+<a class="h" href="https://www.instagram.com/myflowersby/">@myflowersby</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/myflowersby">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Флористика</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="v_studio_flowers_mogilev" data-g="Флористика" data-city="Могилёв">
+<a class="h" href="https://www.instagram.com/v_studio_flowers_mogilev/">@v_studio_flowers_mogilev</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/v_studio_flowers_mogilev">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Флористика/декор</span><span>Могилёв</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="lotus_mogilev" data-g="Флористика" data-city="Могилёв">
+<a class="h" href="https://www.instagram.com/lotus_mogilev/">@lotus_mogilev</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/lotus_mogilev">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Флористика</span><span>Могилёв</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="weddingautogrodno" data-g="Авто на свадьбу" data-city="Гродно">
+<a class="h" href="https://www.instagram.com/weddingautogrodno/">@weddingautogrodno</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/weddingautogrodno">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Авто на свадьбу</span><span>Гродно</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="pokataem.by" data-g="Авто на свадьбу" data-city="Минск">
+<a class="h" href="https://www.instagram.com/pokataem.by/">@pokataem.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/pokataem.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Авто на свадьбу</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="loveavto.by" data-g="Авто на свадьбу" data-city="Могилёв">
+<a class="h" href="https://www.instagram.com/loveavto.by/">@loveavto.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/loveavto.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Авто на свадьбу</span><span>Могилёв</span><span class="tag src">сайт loveavto.by</span></div>
+</div>
+<div class="item" data-h="natallia_marfina" data-g="Визажисты" data-city="Минск">
+<a class="h" href="https://www.instagram.com/natallia_marfina/">@natallia_marfina</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/natallia_marfina">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Визажист</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="dolen75" data-g="Визажисты" data-city="Минск">
+<a class="h" href="https://www.instagram.com/dolen75/">@dolen75</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/dolen75">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Стилист-визажист</span><span>Минск</span><span class="tag src">сайт dolena.by</span></div>
+</div>
+<div class="item" data-h="galinka_ignateva" data-g="Визажисты" data-city="Минск">
+<a class="h" href="https://www.instagram.com/galinka_ignateva/">@galinka_ignateva</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/galinka_ignateva">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Визажист</span><span>Минск</span><span class="tag src">сайт galinamakeup.by</span></div>
+</div>
+<div class="item" data-h="galjass_makeup_profi" data-g="Визажисты" data-city="Минск">
+<a class="h" href="https://www.instagram.com/galjass_makeup_profi/">@galjass_makeup_profi</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/galjass_makeup_profi">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Визажист</span><span>Минск</span><span class="tag src">сайт makeup-profi.by</span></div>
+</div>
+<div class="item" data-h="suvorava_makeup_hair_minsk" data-g="Визажисты" data-city="Минск">
+<a class="h" href="https://www.instagram.com/suvorava_makeup_hair_minsk/">@suvorava_makeup_hair_minsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/suvorava_makeup_hair_minsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Визажист</span><span>Минск</span><span class="tag src">сайт makeup-profi.by</span></div>
+</div>
+<div class="item" data-h="torti_nadin" data-g="Торты и кейтеринг" data-city="Минск">
+<a class="h" href="https://www.instagram.com/torti_nadin/">@torti_nadin</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/torti_nadin">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Торты</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="sestry_cakes" data-g="Торты и кейтеринг" data-city="Минск">
+<a class="h" href="https://www.instagram.com/sestry_cakes/">@sestry_cakes</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/sestry_cakes">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Торты</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="zhil_bil_tort" data-g="Торты и кейтеринг" data-city="Минск">
+<a class="h" href="https://www.instagram.com/zhil_bil_tort/">@zhil_bil_tort</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/zhil_bil_tort">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Торты</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="katyatortodel" data-g="Торты и кейтеринг" data-city="Минск">
+<a class="h" href="https://www.instagram.com/katyatortodel/">@katyatortodel</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/katyatortodel">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Торты</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="catering_shefpovar.by" data-g="Торты и кейтеринг" data-city="Минск">
+<a class="h" href="https://www.instagram.com/catering_shefpovar.by/">@catering_shefpovar.by</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/catering_shefpovar.by">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Кейтеринг</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+<div class="item" data-h="juicycatering_minsk" data-g="Торты и кейтеринг" data-city="Минск">
+<a class="h" href="https://www.instagram.com/juicycatering_minsk/">@juicycatering_minsk</a>
+<div class="acts"><a class="dm" href="https://ig.me/m/juicycatering_minsk">Написать</a><button type="button" class="st" data-s="0">Не писала</button></div>
+<div class="meta"><span>Кейтеринг</span><span>Минск</span><span class="tag src">поиск</span></div>
+</div>
+    <div class="empty" id="empty" hidden>Под эти фильтры никого нет.</div>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+  <section class="notes">
+    <p><b>Метка «писать первыми»</b> стоит у организаторов, площадок и декора: они сами советуют парам подрядчиков. Это мой вывод, а не данные.</p>
+    <p><b>Источник «сайт»</b>: ник взят со ссылки на официальном сайте компании. <b>«Поиск»</b>: аккаунт найден поиском. Если аккаунт не открывается, отметь «Отказ / не найден».</p>
+    <p><b>Где хранятся отметки:</b> в браузере на этом устройстве, сразу после нажатия. Открывай страницу всегда по одной и той же ссылке в Chrome или Safari (не внутри Instagram или Telegram) и не очищай данные сайта. Раз в несколько дней копируй код отметок себе в Telegram — это резервная копия.</p>
+  </section>
+</div>
+<script>
+(function(){
+var MSG = document.getElementById("msgText").textContent;
+var LABELS = ["Не писала","Написала","Ответили","Договорились","Отказ / не найден"];
+var KEY = "wed-partners-status-v1", st = {}, canSave = true;
+// st[h] = {s: статус, t: время отметки (мс)}; старый формат (число) переводится
+try { var raw = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
+  Object.keys(raw).forEach(function(h){ var v=raw[h]; st[h] = (typeof v==="number") ? {s:v,t:0} : v; });
+} catch(e) { st = {}; }
+try { localStorage.setItem("wp-test","1"); localStorage.removeItem("wp-test"); } catch(e) { canSave = false; }
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e) {}
+var stateEl=document.getElementById("saveState");
+if(!canSave){ stateEl.className="bad"; stateEl.textContent="⚠ Здесь отметки НЕ сохранятся. Открой эту ссылку в Chrome или Safari."; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(st)); stateEl.className="ok"; stateEl.textContent="✓ Сохранено "+new Date().toLocaleTimeString("ru",{hour:"2-digit",minute:"2-digit"}); }
+  catch(e){ stateEl.className="bad"; stateEl.textContent="⚠ Не удалось сохранить. Открой ссылку в Chrome или Safari."; } }
+function sOf(h){ return st[h] ? st[h].s : 0; }
+function setS(h,v){ if(!v) delete st[h]; else st[h]={s:v,t:Date.now()}; save(); }
+var tt; function toast(t){ var el=document.getElementById("toast"); el.textContent=t; el.hidden=false; clearTimeout(tt); tt=setTimeout(function(){el.hidden=true;},3500); }
+function selectEl(el){ try { if(el.select){ el.focus(); el.select(); return; } var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch(e) {} }
+function copyText(text, el, ok){ try { navigator.clipboard.writeText(text).then(ok, function(){ selectEl(el); toast("Текст выделен — нажми «Скопировать»"); }); } catch(e) { selectEl(el); toast("Текст выделен — нажми «Скопировать»"); } }
+var msgEl=document.getElementById("msgText");
+var copyBtn=document.getElementById("copyBtn");
+copyBtn.addEventListener("click", function(){ copyText(MSG,msgEl,function(){ copyBtn.textContent="Скопировано"; setTimeout(function(){copyBtn.textContent="Скопировать текст";},1800); }); });
+var items=[].slice.call(document.querySelectorAll(".item"));
+function fmt(t){ if(!t) return ""; var d=new Date(t); return d.toLocaleDateString("ru",{day:"2-digit",month:"2-digit"})+" "+d.toLocaleTimeString("ru",{hour:"2-digit",minute:"2-digit"}); }
+function paint(it){ var h=it.getAttribute("data-h"), s=sOf(h), b=it.querySelector(".st"); b.setAttribute("data-s",s); b.textContent=LABELS[s];
+  var w=it.querySelector(".when"); if(!w){ w=document.createElement("span"); w.className="when"; it.querySelector(".meta").appendChild(w); }
+  var t=st[h]&&st[h].t; w.textContent = s && t ? LABELS[s].toLowerCase()+": "+fmt(t) : ""; w.hidden = !(s && t); }
+function stats(){ var v=items.map(function(it){return sOf(it.getAttribute("data-h"));});
+  function c(f){return v.filter(f).length;}
+  document.getElementById("sSent").textContent=c(function(x){return x>=1&&x<=3;});
+  document.getElementById("sReply").textContent=c(function(x){return x===2||x===3;});
+  document.getElementById("sDeal").textContent=c(function(x){return x===3;});
+  document.getElementById("bar").style.width=(c(function(x){return x>=1;})/items.length*100)+"%"; }
+items.forEach(function(it){
+  var h=it.getAttribute("data-h");
+  it.querySelector(".st").addEventListener("click", function(){ setS(h,(sOf(h)+1)%LABELS.length); paint(it); stats(); });
+  it.querySelector(".dm").addEventListener("click", function(){ if(!sOf(h)){ setS(h,1); paint(it); stats(); } copyText(MSG,msgEl,function(){ toast("Отмечено «Написала». Текст скопирован — вставь в чат"); }); });
+  paint(it);
+});
+// перенос отметок между устройствами
+function enc(o){ return "WP1:"+btoa(unescape(encodeURIComponent(JSON.stringify(o)))); }
+function dec(t){ t=t.trim(); var i=t.indexOf("WP1:"); if(i<0) throw 0; return JSON.parse(decodeURIComponent(escape(atob(t.slice(i+4).replace(/\s/g,""))))); }
+var expText=document.getElementById("expText");
+document.getElementById("expBtn").addEventListener("click", function(){
+  var n=Object.keys(st).length; if(!n){ toast("Пока нет отметок"); return; }
+  var code=enc(st); expText.value=code; expText.hidden=false;
+  copyText(code, expText, function(){ toast("Код скопирован ("+n+" отметок). Отправь его себе в Telegram"); }); });
+document.getElementById("impBtn").addEventListener("click", function(){ var b=document.getElementById("impBox"); b.hidden=!b.hidden; if(!b.hidden) document.getElementById("impText").focus(); });
+document.getElementById("impApply").addEventListener("click", function(){
+  var o; try { o=dec(document.getElementById("impText").value); } catch(e){ toast("Код не распознан. Скопируй его целиком"); return; }
+  var added=0;
+  Object.keys(o).forEach(function(h){ var v=o[h]; if(typeof v==="number") v={s:v,t:0}; if(!v||!v.s) return; var cur=st[h];
+    if(!cur || (v.t||0) > (cur.t||0)){ st[h]={s:v.s,t:v.t||0}; added++; } });
+  save(); items.forEach(paint); stats(); filter();
+  document.getElementById("impText").value=""; document.getElementById("impBox").hidden=true;
+  toast("Готово: обновлено отметок — "+added); });
+var cityKey=function(c){ var m=["Минск","Витебск","Гомель","Гродно","Брест","Могил","Барановичи","Молодечно","Новополоцк"]; for(var i=0;i<m.length;i++) if(c.indexOf(m[i])>=0) return m[i]==="Могил"?"Могилёв":m[i]; return "Другое"; };
+var g="Все", groups=["Все"]; items.forEach(function(it){ var x=it.getAttribute("data-g"); if(groups.indexOf(x)<0) groups.push(x); });
+var chips=document.getElementById("chips");
+groups.forEach(function(name,i){ var b=document.createElement("button"); b.type="button"; b.className="chip"; b.id="chip-"+i;
+  var n= name==="Все"?items.length:items.filter(function(it){return it.getAttribute("data-g")===name;}).length;
+  b.textContent=name+" · "+n; b.setAttribute("aria-pressed", name===g);
+  b.addEventListener("click", function(){ g=name; [].forEach.call(chips.children,function(c){c.setAttribute("aria-pressed", c===b);}); filter(); });
+  chips.appendChild(b); });
+var cities=[]; items.forEach(function(it){ var k=cityKey(it.getAttribute("data-city")); if(cities.indexOf(k)<0) cities.push(k); });
+cities.sort(function(a,b){ return a==="Другое"?1:b==="Другое"?-1:a.localeCompare(b,"ru"); }); cities.unshift("Все города");
+var citySel=document.getElementById("city"); cities.forEach(function(c){ var o=document.createElement("option"); o.value=c; o.textContent=c; citySel.appendChild(o); });
+function filter(){ var city=citySel.value, sf=document.getElementById("status").value, q=document.getElementById("q").value.trim().toLowerCase().replace("@",""), n=0;
+  items.forEach(function(it){ var h=it.getAttribute("data-h"); var show=(g==="Все"||it.getAttribute("data-g")===g)&&(city==="Все города"||cityKey(it.getAttribute("data-city"))===city)&&(sf==="all"||String(sOf(h))===sf)&&(!q||h.toLowerCase().indexOf(q)>=0); it.hidden=!show; if(show) n++; });
+  document.getElementById("empty").hidden = n>0; }
+citySel.addEventListener("change",filter); document.getElementById("status").addEventListener("change",filter); document.getElementById("q").addEventListener("input",filter);
+// при возврате из Instagram — перечитать и обновить экран
+document.addEventListener("visibilitychange", function(){ if(!document.hidden){ items.forEach(paint); stats(); } });
+stats();
+})();
+</script>
+</body>
+</html>
